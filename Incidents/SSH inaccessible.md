@@ -12,7 +12,7 @@
 - SSH connection attempts are failing or timing out.
 - No response on port 22 from remote clients.
 - Console / out-of-band access (cloud console or physical terminal) is still available.
-- Server itself is up and running — only SSH is broken.
+- Server itself is up and running - only SSH is broken.
 
 ---
 
@@ -85,42 +85,42 @@ journalctl -u firewalld            # firewalld
 
 ## 3. What commands will you run?
 
-**Step 1 — Check if SSH service is running:**
+**Step 1:  Check if SSH service is running:**
 
 ```bash
 systemctl status ssh
 systemctl status sshd
 ```
 
-**Step 2 — Check if SSH is listening on port 22:**
+**Step 2:  Check if SSH is listening on port 22:**
 
 ```bash
 ss -tlnp | grep 22
 netstat -tlnp | grep 22
 ```
 
-**Step 3 — Try to start SSH if it's stopped:**
+**Step 3:  Try to start SSH if it's stopped:**
 
 ```bash
 systemctl start ssh
 systemctl start sshd
 ```
 
-**Step 4 — Check SSH configuration for syntax errors:**
+**Step 4:  Check SSH configuration for syntax errors:**
 
 ```bash
 sshd -t
 sshd -T | head -30
 ```
 
-**Step 5 — Check sshd_config for recent changes:**
+**Step 5:  Check sshd_config for recent changes:**
 
 ```bash
 cat /etc/ssh/sshd_config
 grep -i "Port\|PermitRootLogin\|PasswordAuthentication\|ListenAddress" /etc/ssh/sshd_config
 ```
 
-**Step 6 — Check if port 22 is blocked by firewall:**
+**Step 6:  Check if port 22 is blocked by firewall:**
 
 ```bash
 ufw status                                                          # UFW
@@ -128,26 +128,26 @@ firewall-cmd --list-all                                             # firewalld
 iptables -L -n | grep 22
 ```
 
-**Step 7 — Check if the SSH port was changed:**
+**Step 7:  Check if the SSH port was changed:**
 
 ```bash
 grep -i "Port" /etc/ssh/sshd_config
 ```
 
-**Step 8 — Check if host keys exist:**
+**Step 8:  Check if host keys exist:**
 
 ```bash
 ls -lh /etc/ssh/ssh_host_*
 ```
 
-**Step 9 — Check network interface is up:**
+**Step 9:  Check network interface is up:**
 
 ```bash
 ip addr show
 ip link show
 ```
 
-**Step 10 — Check if server is reachable at all (from remote machine):**
+**Step 10: Check if server is reachable at all (from remote machine):**
 
 ```bash
 ping <server-ip>
@@ -180,7 +180,7 @@ sshd -t
 ss -tlnp | grep 22
 
 # Output
-(no output — port 22 not listening)
+(no output - port 22 not listening)
 ```
 
 **Analysis:**
@@ -197,7 +197,7 @@ ss -tlnp | grep 22
 - SSH host keys missing or corrupted (rare, can happen after OS-level changes).
 - Port changed in `sshd_config` without firewall being updated.
 - `sshd` service disabled (`systemctl disable ssh` accidentally run).
-- Network interface misconfigured — server got a different IP after reboot.
+- Network interface misconfigured - server got a different IP after reboot.
 - SELinux/AppArmor policy blocking sshd from binding to port.
 
 **Final root cause (in this scenario):**
@@ -210,7 +210,7 @@ ss -tlnp | grep 22
 
 > Recovery performed via cloud console or physical terminal.
 
-**Step 1 — Check and fix sshd_config syntax error:**
+**Step 1:  Check and fix sshd_config syntax error:**
 
 ```bash
 sshd -t
@@ -218,49 +218,49 @@ nano /etc/ssh/sshd_config
 # Fix the offending line flagged by sshd -t
 ```
 
-**Step 2 — Validate config after fix:**
+**Step 2:  Validate config after fix:**
 
 ```bash
 sshd -t
 # Expected: No output (clean = no errors)
 ```
 
-**Step 3 — Start SSH service:**
+**Step 3:  Start SSH service:**
 
 ```bash
 systemctl start ssh
 systemctl start sshd
 ```
 
-**Step 4 — Verify SSH is now listening:**
+**Step 4:  Verify SSH is now listening:**
 
 ```bash
 ss -tlnp | grep 22
 # Expected: sshd listening on 0.0.0.0:22 or :::22
 ```
 
-**Step 5 — Enable SSH to start on boot (if it was disabled):**
+**Step 5:  Enable SSH to start on boot (if it was disabled):**
 
 ```bash
 systemctl enable ssh
 systemctl enable sshd
 ```
 
-**Step 6 — Check firewall is allowing port 22:**
+**Step 6:  Check firewall is allowing port 22:**
 
 ```bash
 ufw allow 22                                                                  # UFW
 firewall-cmd --permanent --add-service=ssh && firewall-cmd --reload           # firewalld
 ```
 
-**Step 7 — Test SSH from a remote machine:**
+**Step 7:  Test SSH from a remote machine:**
 
 ```bash
 ssh user@<server-ip>
 # Expected: Successful login prompt
 ```
 
-**Step 8 — Verify service is running and stable:**
+**Step 8:  Verify service is running and stable:**
 
 ```bash
 systemctl status ssh
@@ -280,7 +280,7 @@ Never restart sshd without running `sshd -t` first. Make this a habit.
 
 **b) Use sshd config test in deployment pipelines:**
 
-If config is managed via Ansible, Chef, or Puppet — add a `sshd -t` check as a pre-task before applying changes.
+If config is managed via Ansible, Chef, or Puppet - add a `sshd -t` check as a pre-task before applying changes.
 
 **c) Keep a backup SSH port open:**
 
@@ -344,9 +344,9 @@ Probe SSH port 22 every 30 seconds. Alert if probe fails for more than 1 minute.
 
 **CloudWatch / Cloud Provider:**
 
-- AWS — Route 53 Health Check on port 22.
-- GCP — Uptime Check targeting TCP port 22.
-- Azure — Azure Monitor with TCP port probe.
+- AWS - Route 53 Health Check on port 22.
+- GCP - Uptime Check targeting TCP port 22.
+- Azure - Azure Monitor with TCP port probe.
 
 **Nagios / Zabbix / Datadog:**
 
@@ -355,11 +355,11 @@ Probe SSH port 22 every 30 seconds. Alert if probe fails for more than 1 minute.
 
 **Expected Detection:**
 
-Within 1–3 minutes of server coming up with SSH broken — before any human would even notice the server has rebooted.
+Within 1-3 minutes of server coming up with SSH broken. Before any human would even notice the server has rebooted.
 
 ---
 
-## 8. RCA — Root Cause Analysis
+## 8. RCA (Root Cause Analysis)
 
 | Field | Details |
 |---|---|
@@ -438,4 +438,4 @@ A syntax error was introduced in `/etc/ssh/sshd_config` during a manual config c
 | Affected users | 1000 × 0.58 = **580 users** |
 | Potential revenue loss | 580 × Rs. 100 = **Rs. 58,000** |
 
-> Even if the application itself stayed up during the SSH outage, the inability to SSH in means any active incident during that window cannot be responded to remotely. The real risk is compounded impact — if a second issue had arisen during those 35 minutes, recovery time would have been significantly longer.
+> Even if the application itself stayed up during the SSH outage, the inability to SSH in means any active incident during that window cannot be responded to remotely. The real risk is compounded impact. If a second issue had arisen during those 35 minutes, recovery time would have been significantly longer.
