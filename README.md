@@ -1,6 +1,6 @@
 # Linux Production Incident Reports
 
-A personal collection of real-world Linux production incidents I've worked through — documented with full troubleshooting steps, root cause analysis, fixes, and prevention strategies.
+A personal collection of real-world Linux production incidents I've worked through. Documented with full troubleshooting steps, root cause analysis, fixes, and prevention strategies.
 
 ---
 
@@ -32,8 +32,7 @@ Every incident report covers:
 
 | # | Title | Severity | Status |
 |---|-------|----------|--------|
-| 01 | Linux Root Filesystem Full (502 Bad Gateway) | P1 Critical | Resolved |
-| 02 | SSH Inaccessible After Reboot | P1 Critical | Resolved |
+| 01 | SSH Inaccessible After Reboot | P1 Critical | Resolved |
 
 ---
 
@@ -48,9 +47,9 @@ Monitoring stack: Prometheus, Grafana, Blackbox Exporter, CloudWatch.
 ## Notes
 
 - Incident dates and revenue numbers are illustrative examples used for RCA practice.
-- This repo is meant to grow — every new incident I solve gets added here.
+- This repo is meant to grow. Every new incident I solve gets added here.
 - If something helped you, feel free to use it.
 
 ---
 
-*Maintained by [Your Name]*
+*Maintained by Selvamani*
