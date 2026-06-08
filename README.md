@@ -18,7 +18,7 @@ Every incident report covers:
 
 1. **What is the symptom?** - What was observed, how to verify it
 2. **What logs will you check?** - Where to look and what to look for
-3. **What commands will you run?** -— Step-by-step investigation commands
+3. **What commands will you run?** - Step-by-step investigation commands
 4. **What is the likely root cause?** - Findings and analysis
 5. **How would you fix it?** - Recovery steps in order
 6. **How would you prevent recurrence?** - Long-term fixes and hardening
