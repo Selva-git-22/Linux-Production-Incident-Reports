@@ -1,4 +1,4 @@
-# Incident 02 — SSH Inaccessible After Reboot
+# Incident 01 — SSH Inaccessible After Reboot
 
 **Category:** Linux Production Outage
 **Severity:** P1 Critical
