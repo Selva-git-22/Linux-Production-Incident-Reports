@@ -33,6 +33,7 @@ Every incident report covers:
 | # | Title | Severity | Status |
 |---|-------|----------|--------|
 | 01 | SSH Inaccessible After Reboot | P1 Critical | Resolved |
+| 02 | Memory usage continuously increasing | P1 Critical | Resolved |
 
 ---
 
