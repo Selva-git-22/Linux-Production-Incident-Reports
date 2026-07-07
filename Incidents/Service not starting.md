@@ -1,4 +1,4 @@
-# Incident 04 — Service Not Starting
+# Incident 05: Service Not Starting
 
 **Category:** Linux Production Outage
 **Severity:** P1 Critical
@@ -11,7 +11,7 @@
 - The server itself is healthy and reachable; only this specific service refuses to come up.
 - Dependent services or downstream consumers begin failing because this service is down.
 
-## 1. What is the symptom?
+## 1. Symptom
 
 **Observed symptoms:**
 
@@ -44,7 +44,7 @@ Active: activating (auto-restart) (Result: exit-code)
 
 **Conclusion:** The service process is starting and immediately terminating (or never starting), and systemd is unable to bring it to a stable running state.
 
-## 2. What logs will you check?
+## 2. Logs to check
 
 **Service unit logs:**
 
@@ -85,7 +85,7 @@ grep -i "killed process" /var/log/syslog
 # Look for Out-Of-Memory killer terminating the process
 ```
 
-## 3. What commands will you run?
+## 3. Commands to run
 
 **Step 1: Check current service state in detail:**
 
@@ -159,7 +159,7 @@ systemctl daemon-reload
 systemctl restart myservice
 ```
 
-## 4. What is the likely root cause?
+## 4. Likely root cause
 
 **Investigation findings:**
 
@@ -209,7 +209,7 @@ nc: connect to db-host port 5432 (tcp) failed: Connection refused
 
 > The service was configured to hard-depend on a database connection at startup with no retry/backoff logic. The database service was down at the time of the deploy/restart, causing every start attempt by `myservice` to fail immediately and systemd to enter a continuous crash-loop/backoff cycle.
 
-## 5. How would you fix it?
+## 5. The fix
 
 **Step 1: Bring the missing dependency back up first:**
 
