@@ -1,4 +1,4 @@
-# Incident 02 — Cron Job Not Running
+# Incident 02: Cron Job Not Running
 
 **Category:** Linux Production Outage
 **Severity:** P2 High
@@ -7,13 +7,13 @@
 ## Scenario
 
 - A scheduled cron job (e.g., backup script, log rotation, data sync, report generation) did not execute at its scheduled time.
-- No output, no logs, no error notification — the job simply never ran.
+- No output, no logs, no error notification and the job simply never ran.
 - The script works fine when run manually.
-- Server itself is up and running — only the cron-scheduled execution is broken.
+- Server itself is up and running only the cron-scheduled execution is broken.
 
 ---
 
-## 1. What is the symptom?
+## 1. Symptom:
 
 **Observed symptoms:**
 
@@ -56,7 +56,7 @@ CRON[1234]: (username) MAIL (mailed 2 bytes of output but got status 0x7f00)
 
 ---
 
-## 2. What logs will you check?
+## 2. Logs to check:
 
 **Cron service logs:**
 
@@ -98,7 +98,7 @@ journalctl --since "<scheduled-time>" --until "<scheduled-time+5min>"
 
 ---
 
-## 3. What commands will you run?
+## 3. Commands to run:
 
 **Step 1: Confirm the cron entry actually exists:**
 
@@ -176,7 +176,7 @@ ps -ef | grep cron
 
 ---
 
-## 4. What is the likely root cause?
+## 4. Likely root cause:
 
 **Investigation findings:**
 
@@ -207,19 +207,19 @@ grep CRON /var/log/syslog | tail -20
 **Analysis:**
 
 - The cron daemon itself was running fine (ruled out service-level failure).
-- No crontab entry existed for the user — it had been silently wiped.
+- No crontab entry existed for the user it had been silently wiped.
 - This typically happens when: a deployment script overwrote the crontab, a package update reset it, or a manual `crontab -r` was accidentally run instead of `crontab -e`.
-- Since there was no entry, cron never attempted to trigger the job — hence zero logs and no error/failure notification.
+- Since there was no entry, cron never attempted to trigger the job hence zero logs and no error/failure notification.
 
 **Other possible root causes (depending on findings):**
 
 - Cron syntax error in the schedule line (job silently ignored/skipped).
-- Script lacks execute permission (`+x`) — cron logs the attempt but fails to exec.
-- `PATH` or environment variables missing — script depends on env not present under cron's minimal shell.
+- Script lacks execute permission (`+x`)  cron logs the attempt but fails to exec.
+- `PATH` or environment variables missing  script depends on env not present under cron's minimal shell.
 - Script depends on another service (DB, network mount) not yet up at the scheduled time.
-- System clock/timezone drift — job scheduled at "2 AM" but server timezone changed after an OS update.
-- Disk full — job attempted but failed to write output, then errored out silently since `MAILTO` wasn't configured.
-- User account expired/locked — cron refuses to run jobs for locked accounts.
+- System clock/timezone drift job scheduled at "2 AM" but server timezone changed after an OS update.
+- Disk full job attempted but failed to write output, then errored out silently since `MAILTO` wasn't configured.
+- User account expired/locked cron refuses to run jobs for locked accounts.
 - Cron daemon itself was down/crashed.
 
 **Final root cause (in this scenario):**
@@ -228,7 +228,7 @@ grep CRON /var/log/syslog | tail -20
 
 ---
 
-## 5. How would you fix it?
+## 5. The fix:
 
 **Step 1: Recreate the crontab entry:**
 
@@ -280,7 +280,7 @@ grep CRON /var/log/syslog | tail -10
 
 ---
 
-## 6. How would you prevent recurrence?
+## 6. Recurrence prevention:
 
 **a) Never use `crontab -r` in scripts or deployment pipelines:**
 
@@ -326,7 +326,7 @@ crontab -l -u <username> > /backup/crontab_<username>_$(date +%F).bak
 
 ## 7. Which monitoring alert should have detected it?
 
-> **Note:** Cron failures are inherently silent unless explicitly monitored — "no news" must be treated as bad news for scheduled jobs.
+> **Note:** Cron failures are inherently silent unless explicitly monitored. "No news" must be treated as bad news for scheduled jobs.
 
 **Healthchecks.io / Cronitor style dead-man's-switch:**
 
@@ -391,7 +391,7 @@ A scheduled backup cron job stopped running without any error or alert. Investig
 
 - Nightly backup did not run for one full cycle.
 - No alert was raised, so the gap went unnoticed until a downstream report was found stale the next morning.
-- Increased risk exposure — no recovery point available for that period.
+- Increased risk exposure. No recovery point available for that period.
 - Team spent time investigating before identifying the missing crontab entry as the root cause.
 
 **Timeline:**
