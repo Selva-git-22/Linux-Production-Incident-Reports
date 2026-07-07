@@ -1,4 +1,4 @@
-# Incident 03 — Application Port Already in Use
+# Incident 04:  Application Port Already in Use
 
 **Category:** Linux Production Outage
 **Severity:** P1 Critical
@@ -9,9 +9,9 @@
 - Application fails to start after a deploy, restart, or reboot.
 - Startup logs show a "bind" or "address already in use" error for the application's port.
 - The server itself is healthy and reachable.
-- Only the application process fails to come up — everything else on the host is fine.
+- Only the application process fails to come up. Everything else on the host is fine.
 
-## 1. What is the symptom?
+## 1. Symptom:
 
 **Observed symptoms:**
 
@@ -42,7 +42,7 @@ OSError: [Errno 98] Address already in use
 
 **Conclusion:** The application cannot bind to its configured port because something else already holds it.
 
-## 2. What logs will you check?
+## 2. Logs to check:
 
 **Application logs:**
 
@@ -74,7 +74,7 @@ docker ps -a
 # Check for repeated restart/crash loop caused by port conflict
 ```
 
-## 3. What commands will you run?
+## 3. Commands to run:
 
 **Step 1: Identify what is already using the port:**
 
@@ -133,7 +133,7 @@ systemctl list-units --type=service | grep myapp
 systemctl list-units --state=failed
 ```
 
-## 4. What is the likely root cause?
+## 4. Likely root cause:
 
 **Investigation findings:**
 
@@ -182,7 +182,7 @@ Process: myapp.service: Failed with result 'exit-code'
 
 > The previous application process did not terminate cleanly during the last restart and continued holding port 8080 in the background. When the deployment attempted to start a new instance, it failed to bind to the already-occupied port, causing the service to enter a failed state.
 
-## 5. How would you fix it?
+## 5. The fix:
 
 **Step 1: Identify and confirm the process holding the port:**
 
@@ -226,7 +226,7 @@ curl -I http://localhost:8080
 
 **Step 7:** Confirm the load balancer/health check marks the instance healthy again.
 
-## 6. How would you prevent recurrence?
+## 6. Recurrence prevention:
 
 **a) Ensure the service is fully stopped before restart, not just restarted blindly:**
 
